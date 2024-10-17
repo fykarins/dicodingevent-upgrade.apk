@@ -32,7 +32,7 @@ class DetailActivity : AppCompatActivity() {
         }
 
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher
+            onBackPressed()
         }
 
         detailViewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
