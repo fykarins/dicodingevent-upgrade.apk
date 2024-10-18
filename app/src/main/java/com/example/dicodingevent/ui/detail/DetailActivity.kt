@@ -8,10 +8,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.dicodingevent.ui.detail.DetailViewModel
 import com.example.dicodingevent.R
 import com.example.dicodingevent.databinding.ActivityDetailBinding
 
@@ -26,23 +24,23 @@ class DetailActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.apply {
-            title = "Dicoding Event"
+            title = getString(R.string.dicoding_event)
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_arrow_back)
         }
 
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
 
-        detailViewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
+        detailViewModel = ViewModelProvider(this)[DetailViewModel::class.java]
 
         val eventId = intent.getIntExtra("EVENT_ID", 0)
         if (eventId != 0) {
             detailViewModel.fetchEventDetail(eventId.toString())
             observeEventDetail()
         } else {
-            Toast.makeText(this, "Invalid event ID", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.invalid_event_id), Toast.LENGTH_SHORT).show()
             finish()
         }
 
@@ -52,21 +50,17 @@ class DetailActivity : AppCompatActivity() {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(registrationUrl))
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "Registration link not available", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.registration_link_not_available), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun observeEventDetail() {
-        detailViewModel.isLoading.observe(this, Observer { isLoading ->
-            if (isLoading) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
+        detailViewModel.isLoading.observe(this) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
 
-        detailViewModel.eventDetail.observe(this, Observer { detailResponse ->
+        detailViewModel.eventDetail.observe(this) { detailResponse ->
             detailResponse?.let {
                 val event = it.event
 
@@ -79,17 +73,17 @@ class DetailActivity : AppCompatActivity() {
 
                 binding.tvEventOwner.text = event.ownerName
                 binding.tvEventCity.text = event.cityName
-                binding.tvQuota.text = "Quota: ${event.quota}"
-                binding.tvRegistrants.text = "Registrants: ${event.registrants}"
+                binding.tvQuota.text = getString(R.string.quota, event.quota)
+                binding.tvRegistrants.text = getString(R.string.registrants, event.registrants)
 
                 val remainingQuota = event.quota - event.registrants
-                binding.tvRemainingQuota.text = "Remaining Quota: $remainingQuota"
+                binding.tvRemainingQuota.text = getString(R.string.remaining_quota, remainingQuota)
 
-                binding.tvEventTime.text = "${event.beginTime} - ${event.endTime}"
+                binding.tvEventTime.text = getString(R.string.event_time, event.beginTime, event.endTime)
             } ?: run {
                 Log.e("DetailActivity", "Event detail is null")
-                Toast.makeText(this, "Failed to load event details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.failed_to_load_event_details), Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 }

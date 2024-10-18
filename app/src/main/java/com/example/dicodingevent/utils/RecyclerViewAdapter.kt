@@ -2,6 +2,7 @@ package com.example.dicodingevent.utils
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dicodingevent.data.response.Event
 import com.example.dicodingevent.databinding.ItemEventBinding
@@ -16,9 +17,28 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.EventViewHo
     }
 
     fun setData(newListData: List<Event>) {
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int {
+                return listData.size
+            }
+
+            override fun getNewListSize(): Int {
+                return newListData.size
+            }
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return listData[oldItemPosition].id == newListData[newItemPosition].id
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return listData[oldItemPosition] == newListData[newItemPosition]
+            }
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         listData.clear()
         listData.addAll(newListData)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {

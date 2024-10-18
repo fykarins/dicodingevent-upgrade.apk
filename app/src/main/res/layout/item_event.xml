@@ -15,16 +15,14 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <!-- Gambar Event -->
         <ImageView
             android:id="@+id/ivEventImage"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:scaleType="centerCrop"
-            android:contentDescription="Event Image"
+            android:contentDescription="@string/event_image_content_description"
             android:layout_gravity="center"/>
 
-        <!-- Nama Event -->
         <TextView
             android:id="@+id/tvEventName"
             android:layout_width="match_parent"
@@ -34,9 +32,8 @@
             android:textColor="@android:color/black"
             android:paddingTop="8dp"
             android:paddingBottom="4dp"
-            tools:text="Event Name" />
+            tools:text="@string/event_name_sample" />
 
-        <!-- Deskripsi Event -->
         <TextView
             android:id="@+id/tvEventDescription"
             android:layout_width="match_parent"
@@ -45,7 +42,7 @@
             android:textColor="#4A4A4A"
             android:maxLines="3"
             android:ellipsize="end"
-            tools:text="The description may contain details about the event such as the schedule, location, and activities." />
+            tools:text="@string/event_description_sample" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

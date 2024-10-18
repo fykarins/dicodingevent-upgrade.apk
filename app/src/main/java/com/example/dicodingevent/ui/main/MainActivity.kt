@@ -8,7 +8,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.example.dicodingevent.R
 import com.example.dicodingevent.databinding.ActivityMainBinding
-import com.example.dicodingevent.ui.main.MainViewModel
 import com.example.dicodingevent.ui.event.FinishedFragment
 import com.example.dicodingevent.ui.event.HomeFragment
 import com.example.dicodingevent.ui.event.UpcomingFragment
@@ -18,8 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val mainViewModel: MainViewModel by viewModels()
-
-    // Function to load the selected fragment into the fragment container
     private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, fragment)
@@ -33,22 +30,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.nav_view)
-        bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_upcoming -> {
-                    loadFragment(UpcomingFragment())
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.navigation_finished -> {
-                    loadFragment(FinishedFragment())
-                    return@setOnNavigationItemSelectedListener true
-                }
-                R.id.navigation_home -> {
-                    loadFragment(HomeFragment())
-                    return@setOnNavigationItemSelectedListener true
-                }
+        bottomNavigation.setOnItemSelectedListener { item ->
+            val fragment = when (item.itemId) {
+                R.id.navigation_upcoming -> UpcomingFragment()
+                R.id.navigation_finished -> FinishedFragment()
+                R.id.navigation_home -> HomeFragment()
+                else -> null
             }
-            false
+
+            fragment?.let {
+                loadFragment(it)
+                true
+            } ?: false
         }
 
         if (savedInstanceState == null) {

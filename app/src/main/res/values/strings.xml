@@ -11,5 +11,17 @@
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-
+    <string name="dicoding_event">Dicoding Event</string>
+    <string name="event_image_content_description">Event Image</string>
+    <string name="event_name_sample">Event Name</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="finished_events">Finished Events</string>
+    <string name="event_description_sample">The description may contain details about the event such as the schedule, location, and activities.</string>
+    <string name="invalid_event_id">Invalid event ID</string>
+    <string name="registration_link_not_available">Registration link not available</string>
+    <string name="failed_to_load_event_details">Failed to load event details</string>
+    <string name="quota">Quota: %d</string>
+    <string name="registrants">Registrants: %d</string>
+    <string name="remaining_quota">Remaining Quota: %d</string>
+    <string name="event_time">%s - %s</string>
 </resources>

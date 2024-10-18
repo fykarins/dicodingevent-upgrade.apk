@@ -26,13 +26,19 @@ class UpcomingFragment : Fragment() {
         _binding = FragmentUpcomingBinding.inflate(inflater, container, false)
         return binding.root
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        upcomingViewModel = ViewModelProvider(this).get(UpcomingViewModel::class.java)
+        upcomingViewModel = ViewModelProvider(this)[UpcomingViewModel::class.java]
+
         setupRecyclerView()
         observeViewModel()
+
         upcomingViewModel.fetchUpcomingEvents()
     }
 
@@ -43,27 +49,17 @@ class UpcomingFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        upcomingViewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
-            if (isLoading) {
-                binding.progressBar.visibility = View.VISIBLE
-                binding.rvUpcomingEvents.visibility = View.GONE
-            } else {
-                binding.progressBar.visibility = View.GONE
-                binding.rvUpcomingEvents.visibility = View.VISIBLE
-            }
-        })
+        upcomingViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.rvUpcomingEvents.visibility = if (isLoading) View.GONE else View.VISIBLE
+        }
 
-        upcomingViewModel.upcomingEvents.observe(viewLifecycleOwner, { events ->
+        upcomingViewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
             if (events.isNotEmpty()) {
                 eventAdapter.submitList(events)
             } else {
                 Toast.makeText(requireContext(), "No upcoming events available", Toast.LENGTH_SHORT).show()
             }
-        })
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        }
     }
 }

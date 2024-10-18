@@ -6,20 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.event.FinishedFragment">
 
-    <!-- TextView header -->
     <TextView
         android:id="@+id/text_finished"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Finished Events"
+        android:text="@string/finished_events"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- ProgressBar untuk loading -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -31,7 +29,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/rvFinishedEvents"/>
 
-    <!-- RecyclerView untuk event yang sudah selesai -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFinishedEvents"
         android:layout_width="0dp"
