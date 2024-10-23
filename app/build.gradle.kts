@@ -16,6 +16,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY", "\"https://event-api.dicoding.dev/\"")
     }
 
     buildTypes {
@@ -37,6 +39,7 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 }
 
@@ -61,13 +64,16 @@ dependencies {
     }
 
     kapt(libs.glide.compiler)
+    kapt("androidx.room:room-compiler:2.6.1")
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
 
-    implementation(libs.logging.interceptor)
-
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
+
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.room.ktx)
 }

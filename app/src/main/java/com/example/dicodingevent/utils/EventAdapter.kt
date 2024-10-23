@@ -4,15 +4,17 @@ import android.content.Intent
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.dicodingevent.R
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.databinding.ItemEventBinding
 import com.example.dicodingevent.ui.detail.DetailActivity
 
-class EventAdapter : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
+class EventAdapter(private val onBookmarkClick: (ListEventsItem) -> Unit) : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
 
     inner class EventViewHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(event: ListEventsItem) {
@@ -22,6 +24,17 @@ class EventAdapter : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(D
             Glide.with(binding.root.context)
                 .load(event.imageLogo)
                 .into(binding.ivEventImage)
+
+            val ivBookmark = binding.ivBookmark
+            if (event.isBookmarked) {
+                ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmarked_white))
+            } else {
+                ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmark_white))
+            }
+
+            ivBookmark.setOnClickListener {
+                onBookmarkClick(event)
+            }
 
             binding.root.setOnClickListener {
                 val context = binding.root.context

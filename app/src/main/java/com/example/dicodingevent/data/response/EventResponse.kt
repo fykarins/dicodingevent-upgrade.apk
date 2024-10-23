@@ -59,5 +59,12 @@ data class ListEventsItem(
 	val category: String,
 
 	@field:SerializedName("imageUrl")
-	val imageUrl: String
+	val imageUrl: String?,
+
+	@field:SerializedName("active")
+	val active: Boolean,
+
+	@field:SerializedName("isBookmarked")
+	val isBookmarked: Boolean
+
 )

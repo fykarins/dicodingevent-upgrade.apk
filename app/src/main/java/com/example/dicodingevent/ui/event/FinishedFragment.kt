@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.databinding.FragmentFinishedBinding
+import com.example.dicodingevent.data.local.entity.EventEntity
 
 class FinishedFragment : Fragment() {
 
@@ -42,8 +43,15 @@ class FinishedFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+
+        eventAdapter = EventAdapter { event ->
+            if (event.isBookmarked) {
+                finishedViewModel.deleteEvent(event)
+            } else {
+                finishedViewModel.saveEvent(event)
+            }
+        }
         binding.rvFinishedEvents.layoutManager = LinearLayoutManager(requireContext())
-        eventAdapter = EventAdapter()
         binding.rvFinishedEvents.adapter = eventAdapter
     }
 

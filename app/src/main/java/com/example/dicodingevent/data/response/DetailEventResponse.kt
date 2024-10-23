@@ -55,6 +55,12 @@ data class Event(
 	@field:SerializedName("endTime")
 	val endTime: String,
 
+	@field:SerializedName("imageUrl")
+	val imageUrl: String?,
+
+	@field:SerializedName("active")
+	val active: Boolean,
+
 	@field:SerializedName("category")
 	val category: String
 )

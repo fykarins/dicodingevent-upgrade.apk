@@ -24,4 +24,5 @@
     <string name="registrants">Registrants: %d</string>
     <string name="remaining_quota">Remaining Quota: %d</string>
     <string name="event_time">%s - %s</string>
+    <string name="save_bookmark" />
 </resources>

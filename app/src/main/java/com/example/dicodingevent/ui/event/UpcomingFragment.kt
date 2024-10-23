@@ -43,8 +43,15 @@ class UpcomingFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+
+        eventAdapter = EventAdapter { event ->
+            if (event.isBookmarked) {
+                upcomingViewModel.deleteEvent(event)
+            } else {
+                upcomingViewModel.saveEvent(event)
+            }
+        }
         binding.rvUpcomingEvents.layoutManager = LinearLayoutManager(requireContext())
-        eventAdapter = EventAdapter()
         binding.rvUpcomingEvents.adapter = eventAdapter
     }
 

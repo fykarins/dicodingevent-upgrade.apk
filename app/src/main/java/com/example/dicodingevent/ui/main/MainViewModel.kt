@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dicodingevent.data.response.EventResponse
 import kotlinx.coroutines.launch
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.retrofit.ApiConfig
@@ -36,15 +37,13 @@ class MainViewModel : ViewModel() {
             try {
                 val response = ApiConfig.getApiService().getEvents(active)
                 if (response.isSuccessful) {
-                    _listEvents.value = response.body()?.listEvents ?: listOf()
-                    if (_listEvents.value.isNullOrEmpty()) {
-                        _errorMessage.value = "No events found."
-                    }
+                    val eventResponse: EventResponse? = response.body()
+                    _listEvents.value = eventResponse?.listEvents ?: emptyList()
                 } else {
                     handleError(response.message())
                 }
             } catch (e: Exception) {
-                handleError(e.message)
+                handleError(e.message ?: "Unknown error")
             } finally {
                 _isLoading.value = false
             }
@@ -59,23 +58,24 @@ class MainViewModel : ViewModel() {
             try {
                 val response = ApiConfig.getApiService().searchEvents(-1, query)
                 if (response.isSuccessful && response.body() != null) {
-                    _listEvents.value = response.body()?.listEvents ?: listOf()
-                    if (_listEvents.value.isNullOrEmpty()) {
+                    val events = response.body()?.listEvents ?: emptyList()
+                    _listEvents.value = events
+                    if (events.isEmpty()) {
                         _errorMessage.value = "No events found."
                     }
                 } else {
-                    _errorMessage.value = "No events found."
+                    handleError("Error: ${response.message()}")
                 }
             } catch (e: Exception) {
-                handleError(e.message)
+                handleError("Exception: ${e.message}")
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    private fun handleError(message: String?) {
-        _errorMessage.value = "Error: $message"
-        Log.e(TAG, "onFailure: $message")
+    private fun handleError(message: String) {
+        _errorMessage.value = message
+        Log.e(TAG, "Error: $message")
     }
 }
