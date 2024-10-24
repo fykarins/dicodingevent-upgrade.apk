@@ -1,6 +1,7 @@
 package com.example.dicodingevent.di
 
 import android.content.Context
+import com.example.dicodingevent.data.local.room.EventDao
 import com.example.dicodingevent.data.local.room.EventDatabase
 import com.example.dicodingevent.data.retrofit.ApiConfig
 import com.example.dicodingevent.data.source.EventRepository
@@ -13,5 +14,10 @@ object Injection {
         val dao = database.eventDao()
         val appExecutors = AppExecutors()
         return EventRepository.getInstance(apiService, dao, appExecutors)
+    }
+
+    fun provideEventDao(context: Context): EventDao {
+        val database = EventDatabase.getInstance(context)
+        return database.eventDao()
     }
 }

@@ -55,7 +55,7 @@
         android:id="@+id/tvError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No events found."
+        android:text="@string/no_events_found"
         android:textAlignment="center"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"

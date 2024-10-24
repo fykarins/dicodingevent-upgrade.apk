@@ -11,6 +11,7 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.dicodingevent.R
+import com.example.dicodingevent.data.local.entity.EventEntity
 import com.example.dicodingevent.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {
@@ -53,6 +54,44 @@ class DetailActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.registration_link_not_available), Toast.LENGTH_SHORT).show()
             }
         }
+
+        detailViewModel.getFavoriteEventById(eventId).observe(this) { favoriteEvent ->
+            var isFavorite = favoriteEvent != null
+            updateFavoriteIcon(isFavorite)
+
+            binding.fabFavorite.setOnClickListener {
+                isFavorite = !isFavorite
+                if (isFavorite) {
+                    val event = detailViewModel.eventDetail.value?.event
+                    if (event != null) {
+                        val favoriteEntity = EventEntity(
+                            id = event.id.toInt(),
+                            name = event.name,
+                            description = event.description,
+                            ownerName = event.ownerName,
+                            cityName = event.cityName,
+                            quota = event.quota,
+                            registrants = event.registrants,
+                            imageLogo = event.imageLogo,
+                            imageUrl = event.imageUrl,
+                            beginTime = event.beginTime,
+                            endTime = event.endTime,
+                            link = event.link,
+                            mediaCover = event.mediaCover,
+                            summary = event.summary,
+                            category = event.category,
+                            active = event.active,
+                            isBookmarked = true,
+                            isFavorite = true
+                        )
+                        detailViewModel.addEventToFavorite(favoriteEntity)
+                    }
+                } else {
+                    detailViewModel.removeEventFromFavorite(eventId)
+                }
+                updateFavoriteIcon(isFavorite)
+            }
+        }
     }
 
     private fun observeEventDetail() {
@@ -65,6 +104,7 @@ class DetailActivity : AppCompatActivity() {
                 val event = it.event
 
                 binding.tvEventName.text = event.name
+
                 binding.tvDescription.text = HtmlCompat.fromHtml(event.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
                 Glide.with(this)
@@ -84,6 +124,16 @@ class DetailActivity : AppCompatActivity() {
                 Log.e("DetailActivity", "Event detail is null")
                 Toast.makeText(this, getString(R.string.failed_to_load_event_details), Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.fabFavorite.setImageResource(R.drawable.ic_favorite_filled)
+            binding.fabFavorite.contentDescription = getString(R.string.remove_from_favorites)
+        } else {
+            binding.fabFavorite.setImageResource(R.drawable.ic_favorite)
+            binding.fabFavorite.contentDescription = getString(R.string.add_to_favorites)
         }
     }
 }

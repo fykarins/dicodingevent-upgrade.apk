@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.databinding.FragmentHomeBinding
+import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.ui.main.MainViewModel
 import com.example.dicodingevent.utils.EventViewModel
 import com.example.dicodingevent.utils.ViewModelFactory
 import com.example.dicodingevent.data.source.Result
-import android.widget.Toast
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.local.entity.EventEntity
 
@@ -23,35 +22,46 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val factory: ViewModelFactory by lazy { ViewModelFactory.getInstance(requireActivity()) }
-    private val eventViewModel: EventViewModel by viewModels { factory }
-
-    private val eventAdapter = EventAdapter { event ->
-
-        val eventEntity = mapListEventsItemToEventEntity(event)
-        if (event.isBookmarked) {
-            eventViewModel.deleteEvent(eventEntity)
-        } else {
-            eventViewModel.saveEvent(eventEntity)
-        }
-    }
+    private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext())
+        val eventViewModel: EventViewModel by viewModels { factory }
+        val mainViewModel: MainViewModel by viewModels { factory }
+
+        setupRecyclerView(eventViewModel)
+        observeViewModel(eventViewModel, mainViewModel)
+
+        eventViewModel.getHeadlineEvent()
+    }
+
+    private fun setupRecyclerView(eventViewModel: EventViewModel) {
+        eventAdapter = EventAdapter { event ->
+            val eventEntity = mapListEventsItemToEventEntity(event)
+            if (event.isBookmarked) {
+                eventViewModel.deleteEvent(eventEntity)
+            } else {
+                eventViewModel.saveEvent(eventEntity)
+            }
+        }
         binding.recyclerViewHome.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter = eventAdapter
         }
+    }
 
-        eventViewModel.getHeadlineEvent()
+    private fun observeViewModel(eventViewModel: EventViewModel, mainViewModel: MainViewModel) {
         eventViewModel.events.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Loading -> {
@@ -66,7 +76,7 @@ class HomeFragment : Fragment() {
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
-                        context,
+                        requireContext(),
                         "Terjadi kesalahan: ${result.error}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -81,8 +91,6 @@ class HomeFragment : Fragment() {
         mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
-
-        return root
     }
 
     private fun mapListEventsItemToEventEntity(listEventsItem: ListEventsItem): EventEntity {

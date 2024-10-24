@@ -17,9 +17,14 @@ abstract class EventDatabase : RoomDatabase() {
         private var INSTANCE: EventDatabase? = null
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 try {
-                    database.execSQL("ALTER TABLE events ADD COLUMN mediaCover TEXT")
+                    db.execSQL("ALTER TABLE events ADD COLUMN mediaCover TEXT DEFAULT '' NOT NULL")
+                    db.execSQL("ALTER TABLE events ADD COLUMN summary TEXT DEFAULT '' NOT NULL")
+                    db.execSQL("ALTER TABLE events ADD COLUMN isBookmarked INTEGER DEFAULT 0 NOT NULL")
+                    db.execSQL("ALTER TABLE events ADD COLUMN imageLogo TEXT DEFAULT '' NOT NULL")
+
+                    db.execSQL("ALTER TABLE events ADD COLUMN imageUrl TEXT DEFAULT NULL")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

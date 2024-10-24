@@ -69,7 +69,7 @@ class FinishedViewModel(private val eventRepository: EventRepository) : ViewMode
         )
     }
 
-    private fun fetchFinishedEvents() {
+    fun fetchFinishedEvents() {
         viewModelScope.launch {
             _isLoading.value = true
             try {

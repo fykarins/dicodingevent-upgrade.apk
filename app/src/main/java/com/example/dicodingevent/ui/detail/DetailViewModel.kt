@@ -5,12 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import retrofit2.Response
+import com.example.dicodingevent.data.local.entity.EventEntity
+import com.example.dicodingevent.data.local.room.EventDao
 import com.example.dicodingevent.data.response.DetailEventResponse
 import com.example.dicodingevent.data.retrofit.ApiConfig
+import kotlinx.coroutines.launch
+import retrofit2.Response
 
-class DetailViewModel : ViewModel() {
+class DetailViewModel(private val eventDao: EventDao) : ViewModel() {
     private val _eventDetail = MutableLiveData<DetailEventResponse>()
     val eventDetail: LiveData<DetailEventResponse> get() = _eventDetail
 
@@ -33,5 +35,29 @@ class DetailViewModel : ViewModel() {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun addEventToFavorite(event: EventEntity) {
+        viewModelScope.launch {
+            try {
+                eventDao.insert(event)
+            } catch (e: Exception) {
+                Log.e("DetailViewModel", "Error adding event to favorites: ${e.message}")
+            }
+        }
+    }
+
+    fun removeEventFromFavorite(eventId: Int) {
+        viewModelScope.launch {
+            try {
+                eventDao.deleteById(eventId)
+            } catch (e: Exception) {
+                Log.e("DetailViewModel", "Error removing event from favorites: ${e.message}")
+            }
+        }
+    }
+
+    fun getFavoriteEventById(eventId: Int): LiveData<EventEntity?> {
+        return eventDao.getFavoriteEventById(eventId)
     }
 }

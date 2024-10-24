@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.databinding.FragmentFinishedBinding
-import com.example.dicodingevent.data.local.entity.EventEntity
+import com.example.dicodingevent.utils.ViewModelFactory
 
 class FinishedFragment : Fragment() {
 
@@ -18,22 +18,12 @@ class FinishedFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var eventAdapter: EventAdapter
-    private lateinit var finishedViewModel: FinishedViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFinishedBinding.inflate(inflater, container, false)
-        val binding = _binding
-            ?: throw IllegalStateException("View binding failed")
-
-        finishedViewModel = ViewModelProvider(this)[FinishedViewModel::class.java]
-
-        setupRecyclerView()
-        observeViewModel()
-
         return binding.root
     }
 
@@ -42,7 +32,19 @@ class FinishedFragment : Fragment() {
         _binding = null
     }
 
-    private fun setupRecyclerView() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext())
+        val finishedViewModel: FinishedViewModel by viewModels { factory }
+
+        setupRecyclerView(finishedViewModel)
+        observeViewModel(finishedViewModel)
+
+        finishedViewModel.fetchFinishedEvents()
+    }
+
+    private fun setupRecyclerView(finishedViewModel: FinishedViewModel) {
 
         eventAdapter = EventAdapter { event ->
             if (event.isBookmarked) {
@@ -55,7 +57,7 @@ class FinishedFragment : Fragment() {
         binding.rvFinishedEvents.adapter = eventAdapter
     }
 
-    private fun observeViewModel() {
+    private fun observeViewModel(finishedViewModel: FinishedViewModel) {
         finishedViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             binding.rvFinishedEvents.visibility = if (isLoading) View.GONE else View.VISIBLE
@@ -65,8 +67,7 @@ class FinishedFragment : Fragment() {
             if (events.isNotEmpty()) {
                 eventAdapter.submitList(events)
             } else {
-                Toast.makeText(requireContext(), "No finished events available", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "No finished events available", Toast.LENGTH_SHORT).show()
             }
         }
     }
