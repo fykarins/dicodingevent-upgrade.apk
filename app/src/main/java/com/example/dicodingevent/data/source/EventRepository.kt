@@ -6,8 +6,10 @@ import com.example.dicodingevent.data.local.entity.EventEntity
 import com.example.dicodingevent.data.local.room.EventDao
 import com.example.dicodingevent.data.retrofit.ApiService
 import com.example.dicodingevent.utils.AppExecutors
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EventRepository private constructor(
     private val apiService: ApiService,
@@ -15,17 +17,15 @@ class EventRepository private constructor(
     private val appExecutors: AppExecutors
 ) {
     private val result = MediatorLiveData<Result<List<EventEntity>>>()
-    private val apiKey = "https://event-api.dicoding.dev/"
 
     fun getHeadlineEvent(): LiveData<Result<List<EventEntity>>> {
         result.value = Result.Loading
 
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = apiService.getEvent(apiKey)
+                val response = apiService.getEvent("apiKey")
                 if (response.isSuccessful) {
                     val events = response.body()?.listEvents ?: emptyList()
-                    val eventList = ArrayList<EventEntity>()
 
                     appExecutors.diskIO.execute {
                         events.forEach { event ->
@@ -49,14 +49,19 @@ class EventRepository private constructor(
                                 active = event.active,
                                 isBookmarked = isBookmarked
                             )
-                            eventList.add(eventEntity)
+                            eventDao.insertEvents(listOf(eventEntity))
                         }
                         eventDao.deleteAllNonBookmarked()
-                        eventDao.insertEvents(eventList)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        result.value = Result.Error(response.message())
                     }
                 }
             } catch (e: Exception) {
-                result.value = Result.Error(e.message.toString())
+                withContext(Dispatchers.Main) {
+                    result.value = Result.Error(e.message ?: "An error occurred")
+                }
             }
         }
 
@@ -67,17 +72,20 @@ class EventRepository private constructor(
 
         return result
     }
+
     fun getBookmarkedEvents(): LiveData<List<EventEntity>> {
         return eventDao.getBookmarkedEvents()
     }
+
     fun setBookmarkedEvent(event: EventEntity, bookmarkState: Boolean) {
         appExecutors.diskIO.execute {
             event.isBookmarked = bookmarkState
             eventDao.updateEvent(event)
         }
     }
+
     fun getFinishedEvents(): LiveData<List<EventEntity>> {
-        return eventDao.getEventsByStatus(false) // Misalkan "false" berarti event sudah selesai
+        return eventDao.getEventsByStatus(false)
     }
 
     companion object {
@@ -92,5 +100,4 @@ class EventRepository private constructor(
                 instance ?: EventRepository(apiService, eventDao, appExecutors)
             }.also { instance = it }
     }
-
 }
