@@ -86,6 +86,7 @@ class EventRepository private constructor(
 
     fun getFinishedEvents(): LiveData<List<EventEntity>> {
         return eventDao.getEventsByStatus(false)
+<<<<<<< HEAD
     }
 
     fun getFavoriteEvents(): LiveData<List<EventEntity>> {
@@ -96,6 +97,8 @@ class EventRepository private constructor(
         CoroutineScope(Dispatchers.IO).launch {
             eventDao.updateBookmarkStatus(eventId, isBookmarked)
         }
+=======
+>>>>>>> 88c50970c89bfb823be958d807fc28aa0a38c5cc
     }
 
     companion object {
