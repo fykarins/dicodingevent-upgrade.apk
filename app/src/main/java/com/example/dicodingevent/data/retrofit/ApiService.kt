@@ -12,22 +12,22 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("/events")
-    suspend fun getEvents(@Query("active") active: Int): Response<EventResponse>
+    suspend fun getEvents(@Query("active") active: Int, limit: Int): Response<EventResponse>
 
-    @GET("/events") // Changed to use consistent endpoint path
+    @GET("/events")
     suspend fun getEvent(@Query("apiKey") apiKey: String): Response<EventResponse>
 
     @GET("/events/{id}")
     suspend fun getDetail(@Path("id") id: String): Response<DetailEventResponse>
 
-    @GET("/events") // Changed to use consistent endpoint path
+    @GET("/events")
     suspend fun searchEvents(
-        @Query("active") active: Int,
+        @Query("active") active: String,
         @Query("q") query: String
     ): Response<EventResponse>
 
     companion object {
-        private const val BASE_URL = "https://your-api-base-url.com/"
+        private const val BASE_URL = "https://event-api.dicoding.dev/"
 
         fun create(): ApiService {
             val retrofit = Retrofit.Builder()

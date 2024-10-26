@@ -25,11 +25,14 @@ class UpcomingViewModel(private val eventRepository: EventRepository) : ViewMode
         fetchUpcomingEvents()
     }
 
-    fun fetchUpcomingEvents() {
+    fun fetchUpcomingEvents(limit: Int = 10) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val response: Response<EventResponse> = ApiConfig.getApiService().getEvents(active = 1)
+                val response: Response<EventResponse> = ApiConfig.getApiService().getEvents(
+                    active = 1,
+                    limit = limit
+                )
                 if (response.isSuccessful && response.body() != null) {
                     _upcomingEvents.value = response.body()?.listEvents ?: listOf()
                 } else {

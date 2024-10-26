@@ -69,11 +69,14 @@ class FinishedViewModel(private val eventRepository: EventRepository) : ViewMode
         )
     }
 
-    fun fetchFinishedEvents() {
+    fun fetchFinishedEvents(limit: Int = 10) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val response: Response<EventResponse> = ApiConfig.getApiService().getEvents(active = 0)
+                val response: Response<EventResponse> = ApiConfig.getApiService().getEvents(
+                    active = 0,
+                    limit = limit
+                )
                 if (response.isSuccessful && response.body() != null) {
                     _finishedEvents.value = response.body()?.listEvents ?: listOf()
                 } else {

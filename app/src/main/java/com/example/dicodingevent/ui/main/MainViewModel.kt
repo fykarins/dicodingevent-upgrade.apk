@@ -4,13 +4,15 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.dicodingevent.data.response.EventResponse
 import kotlinx.coroutines.launch
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.retrofit.ApiConfig
+import com.example.dicodingevent.utils.SettingPreferences
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val pref: SettingPreferences) : ViewModel() {
 
     private val _listEvents = MutableLiveData<List<ListEventsItem>>()
     val listEvents: LiveData<List<ListEventsItem>> = _listEvents
@@ -23,6 +25,7 @@ class MainViewModel : ViewModel() {
 
     companion object {
         private const val TAG = "MainViewModel"
+        private const val LIMIT = 10
     }
 
     init {
@@ -35,7 +38,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = ApiConfig.getApiService().getEvents(active)
+                val response = ApiConfig.getApiService().getEvents(active, LIMIT)
                 if (response.isSuccessful) {
                     val eventResponse: EventResponse? = response.body()
                     _listEvents.value = eventResponse?.listEvents ?: emptyList()
@@ -56,7 +59,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = ApiConfig.getApiService().searchEvents(-1, query)
+                val response = ApiConfig.getApiService().searchEvents("-1", query)
                 if (response.isSuccessful && response.body() != null) {
                     val events = response.body()?.listEvents ?: emptyList()
                     _listEvents.value = events
@@ -77,5 +80,15 @@ class MainViewModel : ViewModel() {
     private fun handleError(message: String) {
         _errorMessage.value = message
         Log.e(TAG, "Error: $message")
+    }
+
+    fun getThemeSettings(): LiveData<Boolean> {
+        return pref.getThemeSetting().asLiveData()
+    }
+
+    fun saveThemeSetting(isDarkModeActive: Boolean) {
+        viewModelScope.launch {
+            pref.saveThemeSetting(isDarkModeActive)
+        }
     }
 }

@@ -24,4 +24,6 @@
     <string name="add_to_favorites"><![CDATA["    <string name=\"add_to_favorites\">Add to favorites</string>"]]></string>
     <string name="remove_from_favorites"><![CDATA[<string name=\"remove_from_favorites\">Remove to favorites</string>]]></string>
     <string name="title_favorite">Favorite</string>
+    <string name="dark_mode">Dark Mode</string>
+
 </resources>

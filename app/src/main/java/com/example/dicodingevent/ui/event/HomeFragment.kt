@@ -10,8 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.databinding.FragmentHomeBinding
 import com.example.dicodingevent.utils.EventAdapter
-import com.example.dicodingevent.ui.main.MainViewModel
-import com.example.dicodingevent.utils.EventViewModel
 import com.example.dicodingevent.utils.ViewModelFactory
 import com.example.dicodingevent.data.source.Result
 import com.example.dicodingevent.data.response.ListEventsItem
@@ -23,11 +21,15 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var eventAdapter: EventAdapter
+    private val homeViewModel: HomeViewModel by viewModels {
+        ViewModelFactory.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflate binding dari layout fragment_home.xml
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,23 +37,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext())
-        val eventViewModel: EventViewModel by viewModels { factory }
-        val mainViewModel: MainViewModel by viewModels { factory }
-
-        setupRecyclerView(eventViewModel)
-        observeViewModel(eventViewModel, mainViewModel)
-
-        eventViewModel.getHeadlineEvent()
+        setupRecyclerView()
+        observeViewModel()
+        homeViewModel.getHeadlineEvent()
     }
 
-    private fun setupRecyclerView(eventViewModel: EventViewModel) {
+    private fun setupRecyclerView() {
         eventAdapter = EventAdapter { event ->
             val eventEntity = mapListEventsItemToEventEntity(event)
             if (event.isBookmarked) {
-                eventViewModel.deleteEvent(eventEntity)
+                homeViewModel.deleteEvent(eventEntity)
             } else {
-                eventViewModel.saveEvent(eventEntity)
+                homeViewModel.saveEvent(eventEntity)
             }
         }
         binding.recyclerViewHome.apply {
@@ -61,8 +58,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun observeViewModel(eventViewModel: EventViewModel, mainViewModel: MainViewModel) {
-        eventViewModel.events.observe(viewLifecycleOwner) { result ->
+    private fun observeViewModel() {
+        homeViewModel.events.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -82,14 +79,6 @@ class HomeFragment : Fragment() {
                     ).show()
                 }
             }
-        }
-
-        mainViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            eventAdapter.submitList(events)
-        }
-
-        mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
 

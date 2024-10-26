@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">DicodingEvent</string>
+    <string name="title_home">Home</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_finished">Finished</string>
+    <string name="dicoding_event">Dicoding Event</string>
+    <string name="event_image_content_description">Event Image</string>
+    <string name="event_name_sample">Event Name</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="finished_events">Finished Events</string>
+    <string name="event_description_sample">The description may contain details about the event such as the schedule, location, and activities.</string>
+    <string name="invalid_event_id">Invalid event ID</string>
+    <string name="registration_link_not_available">Registration link not available</string>
+    <string name="failed_to_load_event_details">Failed to load event details</string>
+    <string name="quota">Quota: %d</string>
+    <string name="registrants">Registrants: %d</string>
+    <string name="remaining_quota">Remaining Quota: %d</string>
+    <string name="event_time">%s - %s</string>
     <string name="save_bookmark" />
     <string name="event_image">Event Image</string>
     <string name="upcoming_events_1">Upcoming Events</string>
@@ -8,4 +25,6 @@
     <string name="add_to_favorites"><![CDATA["    <string name=\"add_to_favorites\">Add to favorites</string>"]]></string>
     <string name="remove_from_favorites"><![CDATA[<string name=\"remove_from_favorites\">Remove to favorites</string>]]></string>
     <string name="title_favorite">Favorite</string>
+    <string name="dark_mode">Dark Mode</string>
+
 </resources>

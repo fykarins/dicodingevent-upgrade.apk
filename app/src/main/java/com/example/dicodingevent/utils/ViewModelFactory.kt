@@ -13,41 +13,48 @@ import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.ui.main.MainViewModel
 
 class ViewModelFactory private constructor(
-    private val EventRepository: EventRepository,
-    private val eventDao: EventDao
-
+    private val eventRepository: EventRepository,
+    private val eventDao: EventDao,
+    private val pref: SettingPreferences
 ) : ViewModelProvider.NewInstanceFactory() {
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(EventViewModel::class.java)) {
-            return EventViewModel(EventRepository) as T
-        } else if (modelClass.isAssignableFrom(UpcomingViewModel::class.java)) {
-            return UpcomingViewModel(EventRepository) as T
+        return when {
+            modelClass.isAssignableFrom(UpcomingViewModel::class.java) -> {
+                UpcomingViewModel(eventRepository) as T
+            }
+            modelClass.isAssignableFrom(FinishedViewModel::class.java) -> {
+                FinishedViewModel(eventRepository) as T
+            }
+            modelClass.isAssignableFrom(FavoriteViewModel::class.java) -> {
+                FavoriteViewModel(eventRepository) as T
+            }
+            modelClass.isAssignableFrom(MainViewModel::class.java) -> {
+                MainViewModel(pref) as T
+            }
+            modelClass.isAssignableFrom(DetailViewModel::class.java) -> {
+                DetailViewModel(eventDao) as T
+            }
+            else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
-        else if (modelClass.isAssignableFrom(FinishedViewModel::class.java)) {
-            return FinishedViewModel(EventRepository) as T
-        }
-        else if (modelClass.isAssignableFrom(FavoriteViewModel::class.java)) {
-            return FavoriteViewModel(EventRepository) as T
-        }
-        else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel() as T
-        }
-        else if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
-            return DetailViewModel(eventDao) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
 
     companion object {
         @Volatile
         private var instance: ViewModelFactory? = null
-        fun getInstance(context: Context): ViewModelFactory =
+
+        fun getInstance(context: Context, pref: SettingPreferences): ViewModelFactory =
             instance ?: synchronized(this) {
                 instance ?: ViewModelFactory(
                     Injection.provideRepository(context),
-                    Injection.provideEventDao(context)
+                    Injection.provideEventDao(context),
+                    pref
                 )
             }.also { instance = it }
+
+        fun getInstance(context: Context): ViewModelFactory {
+            throw IllegalArgumentException("pref: SettingPreferences is required")
+        }
     }
 }

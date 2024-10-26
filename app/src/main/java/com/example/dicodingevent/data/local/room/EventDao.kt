@@ -18,13 +18,13 @@ interface EventDao {
     fun getBookmarkedEvents(): LiveData<List<EventEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertEvents(events: List<EventEntity>) // Added `suspend` for better async handling
+    suspend fun insertEvents(events: List<EventEntity>)
 
     @Update
-    suspend fun updateEvent(event: EventEntity) // Added `suspend` for better async handling
+    suspend fun updateEvent(event: EventEntity)
 
     @Query("DELETE FROM events WHERE isBookmarked = 0")
-    suspend fun deleteAllNonBookmarked() // Added `suspend` for better async handling
+    suspend fun deleteAllNonBookmarked()
 
     @Query("SELECT EXISTS(SELECT * FROM events WHERE name = :name AND isBookmarked = 1)")
     fun isEventBookmarked(name: String): Boolean
@@ -45,7 +45,10 @@ interface EventDao {
     fun getFavoriteEvents(): LiveData<List<EventEntity>>
 
     @Query("UPDATE events SET isBookmarked = :bookmarked WHERE id = :eventId")
-    suspend fun updateBookmarkStatus(eventId: Int, bookmarked: Boolean) // Fixed missing function body
+    suspend fun updateBookmarkStatus(eventId: Int, bookmarked: Boolean)
+
+    @Query("SELECT * FROM events WHERE name LIKE '%' || :query || '%'")
+    fun searchEvents(query: String): List<EventEntity>
 
     companion object {
         fun getInstance(): EventDao {
