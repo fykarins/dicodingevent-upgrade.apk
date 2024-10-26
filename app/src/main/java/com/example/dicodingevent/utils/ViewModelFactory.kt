@@ -43,6 +43,7 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
                 HomeViewModel(eventRepository) as T
             }
+
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

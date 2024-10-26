@@ -20,6 +20,8 @@ import com.example.dicodingevent.di.Injection
 import com.example.dicodingevent.ui.event.FinishedFragment
 import com.example.dicodingevent.ui.event.HomeFragment
 import com.example.dicodingevent.ui.event.UpcomingFragment
+import com.example.dicodingevent.ui.favorite.FavoriteFragment
+import com.example.dicodingevent.ui.setting.SettingFragment
 import com.example.dicodingevent.utils.DataStoreManager
 import com.example.dicodingevent.utils.DataStoreViewModel
 import com.example.dicodingevent.utils.SettingPreferences
@@ -81,16 +83,20 @@ class MainActivity : AppCompatActivity() {
         // Setup Bottom Navigation
         val bottomNavigation: BottomNavigationView = findViewById(R.id.nav_view)
         bottomNavigation.setOnItemSelectedListener { item ->
-            val fragment = when (item.itemId) {
+            val fragment: Fragment? = when (item.itemId) {
                 R.id.navigation_upcoming -> UpcomingFragment()
                 R.id.navigation_finished -> FinishedFragment()
                 R.id.navigation_home -> HomeFragment()
+                R.id.navigation_favorite -> FavoriteFragment()
+                R.id.navigation_setting -> SettingFragment()
                 else -> null
             }
-            fragment?.let {
-                loadFragment(it)
+            if (fragment != null) {
+                loadFragment(fragment)
                 true
-            } ?: false
+            } else {
+                false
+            }
         }
 
         // Default fragment load

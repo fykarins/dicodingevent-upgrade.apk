@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.material)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.preference)
 
 
     testImplementation(libs.junit)

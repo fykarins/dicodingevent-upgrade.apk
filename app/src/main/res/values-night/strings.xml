@@ -26,5 +26,8 @@
     <string name="remove_from_favorites"><![CDATA[<string name=\"remove_from_favorites\">Remove to favorites</string>]]></string>
     <string name="title_favorite">Favorite</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="daily_reminder">Daily Reminder</string>
+    <string name="dark_mode_theme">Dark Mode</string>
+    <string name="setting">Setting</string>
 
 </resources>
