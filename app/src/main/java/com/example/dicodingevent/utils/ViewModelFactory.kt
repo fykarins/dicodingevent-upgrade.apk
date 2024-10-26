@@ -8,6 +8,7 @@ import com.example.dicodingevent.data.source.EventRepository
 import com.example.dicodingevent.di.Injection
 import com.example.dicodingevent.ui.detail.DetailViewModel
 import com.example.dicodingevent.ui.event.FinishedViewModel
+import com.example.dicodingevent.ui.event.HomeViewModel
 import com.example.dicodingevent.ui.event.UpcomingViewModel
 import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.ui.main.MainViewModel
@@ -35,6 +36,12 @@ class ViewModelFactory private constructor(
             }
             modelClass.isAssignableFrom(DetailViewModel::class.java) -> {
                 DetailViewModel(eventDao) as T
+            }
+            modelClass.isAssignableFrom(MainViewModel::class.java) -> {
+                MainViewModel(pref) as T
+            }
+            modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
+                HomeViewModel(eventRepository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

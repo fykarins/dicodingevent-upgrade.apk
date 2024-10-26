@@ -20,7 +20,7 @@
 
     <item
         android:id="@+id/navigation_favorite"
-        android:icon="@drawable/ic_favorite"
+        android:icon="@drawable/ic_favorite_filled"
         android:title="@string/title_favorite" />
 
 </menu>

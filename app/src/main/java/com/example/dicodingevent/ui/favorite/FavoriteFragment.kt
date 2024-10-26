@@ -1,16 +1,16 @@
 package com.example.dicodingevent.ui.favorite
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.R
-import com.example.dicodingevent.data.local.room.EventDao
 import com.example.dicodingevent.data.response.ListEventsItem
-import com.example.dicodingevent.data.retrofit.ApiService
-import com.example.dicodingevent.data.source.EventRepository
-import com.example.dicodingevent.utils.AppExecutors
+import com.example.dicodingevent.databinding.FragmentFavoriteBinding
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
@@ -18,14 +18,22 @@ import com.example.dicodingevent.utils.dataStore
 
 class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
 
+    private var _binding: FragmentFavoriteBinding? = null
+    private val binding get() = _binding!!
     private lateinit var viewModel: FavoriteViewModel
     private lateinit var adapter: EventAdapter
-    private val repository by lazy {
-        EventRepository.getInstance(
-            apiService = ApiService.create(),
-            appExecutors = AppExecutors(),
-            eventDao = EventDao.getInstance()
-        )
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,38 +43,64 @@ class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
         val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
         viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
 
+        setupRecyclerView()
+        observeViewModel()
+
+        viewModel.fetchFavoriteEvents()
+    }
+
+    private fun setupRecyclerView() {
         adapter = EventAdapter { eventItem ->
-            viewModel.toggleBookmarkStatus(eventItem)
+            if (eventItem.isBookmarked) {
+                viewModel.deleteFavoriteEvent(eventItem)
+            } else {
+                viewModel.addFavoriteEvent(eventItem)
+            }
         }
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = adapter
+    }
 
-        viewModel.getFavoriteEvents().observe(viewLifecycleOwner) { users ->
-            val items = arrayListOf<ListEventsItem>()
-            users.map {
-                val item = ListEventsItem(
-                    id = it.id,
-                    name = it.name,
-                    imageLogo = it.mediaCover,
-                    active = it.active,
-                    beginTime = it.beginTime,
-                    cityName = it.cityName,
-                    description = it.description,
-                    endTime = it.endTime,
-                    imageUrl = it.imageUrl,
-                    isBookmarked = it.isBookmarked,
-                    link = it.link,
-                    mediaCover = it.mediaCover,
-                    ownerName = it.ownerName,
-                    quota = it.quota,
-                    registrants = it.registrants,
-                    summary = it.summary,
-                    category = it.category
-                )
-                items.add(item)
+    private fun observeViewModel() {
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.recyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
+        }
+
+        viewModel.favoriteEvents.observe(viewLifecycleOwner) { events ->
+            if (events.isNotEmpty()) {
+                val eventItems = events.map { eventEntity ->
+                    ListEventsItem(
+                        id = eventEntity.id,
+                        name = eventEntity.name,
+                        imageLogo = eventEntity.mediaCover,
+                        active = eventEntity.active,
+                        beginTime = eventEntity.beginTime,
+                        cityName = eventEntity.cityName,
+                        description = eventEntity.description,
+                        endTime = eventEntity.endTime,
+                        imageUrl = eventEntity.imageUrl,
+                        isBookmarked = eventEntity.isBookmarked,
+                        link = eventEntity.link,
+                        mediaCover = eventEntity.mediaCover,
+                        ownerName = eventEntity.ownerName,
+                        quota = eventEntity.quota,
+                        registrants = eventEntity.registrants,
+                        summary = eventEntity.summary,
+                        category = eventEntity.category
+                    )
+                }
+                adapter.submitList(eventItems)
+            } else {
+                Toast.makeText(requireContext(), "No favorite events available", Toast.LENGTH_SHORT).show()
             }
-            adapter.submitList(items)
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
         }
     }
 }
