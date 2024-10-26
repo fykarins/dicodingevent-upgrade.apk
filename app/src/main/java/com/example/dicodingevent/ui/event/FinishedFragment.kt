@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.databinding.FragmentFinishedBinding
+import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
+import com.example.dicodingevent.utils.dataStore
 
 class FinishedFragment : Fragment() {
 
@@ -35,7 +37,8 @@ class FinishedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext())
+        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
         val finishedViewModel: FinishedViewModel by viewModels { factory }
 
         setupRecyclerView(finishedViewModel)

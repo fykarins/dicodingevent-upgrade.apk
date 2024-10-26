@@ -14,6 +14,8 @@ import com.example.dicodingevent.utils.ViewModelFactory
 import com.example.dicodingevent.data.source.Result
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.local.entity.EventEntity
+import com.example.dicodingevent.utils.SettingPreferences
+import com.example.dicodingevent.utils.dataStore
 
 class HomeFragment : Fragment() {
 
@@ -22,14 +24,14 @@ class HomeFragment : Fragment() {
 
     private lateinit var eventAdapter: EventAdapter
     private val homeViewModel: HomeViewModel by viewModels {
-        ViewModelFactory.getInstance(requireContext())
+        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate binding dari layout fragment_home.xml
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }

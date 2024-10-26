@@ -52,9 +52,5 @@ class ViewModelFactory private constructor(
                     pref
                 )
             }.also { instance = it }
-
-        fun getInstance(context: Context): ViewModelFactory {
-            throw IllegalArgumentException("pref: SettingPreferences is required")
-        }
     }
 }

@@ -12,7 +12,9 @@ import com.example.dicodingevent.data.retrofit.ApiService
 import com.example.dicodingevent.data.source.EventRepository
 import com.example.dicodingevent.utils.AppExecutors
 import com.example.dicodingevent.utils.EventAdapter
+import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
+import com.example.dicodingevent.utils.dataStore
 
 class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
 
@@ -29,7 +31,8 @@ class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val factory = ViewModelFactory.getInstance(requireContext())
+        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
         viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
 
         adapter = EventAdapter { eventItem ->

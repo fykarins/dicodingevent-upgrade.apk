@@ -55,10 +55,9 @@ class EventFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         tabName = arguments?.getString(ARG_TAB) ?: ""
 
-        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireActivity())
-        val viewModel: EventViewModel by viewModels {
-            factory
-        }
+        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
+        val viewModel: EventViewModel by viewModels { factory }
 
         val eventAdapter = EventAdapter(onBookmarkClick = { event ->
             Toast.makeText(context, "Bookmark clicked for ${event.name}", Toast.LENGTH_SHORT).show()
