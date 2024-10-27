@@ -65,6 +65,9 @@ data class ListEventsItem(
 	val active: Boolean,
 
 	@field:SerializedName("isBookmarked")
-	val isBookmarked: Boolean
+	val isBookmarked: Boolean = false,
+
+	@field:SerializedName("isFavorite")
+	val isFavorite: Boolean = false
 
 )

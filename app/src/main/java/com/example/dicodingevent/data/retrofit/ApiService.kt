@@ -18,10 +18,14 @@ interface ApiService {
     ): Response<EventResponse>
 
     @GET("/events")
-    suspend fun getEvent(@Query("apiKey") apiKey: String): Response<EventResponse>
+    suspend fun getEvent(
+        @Query("apiKey") apiKey: String
+    ): Response<EventResponse>
 
     @GET("/events/{id}")
-    suspend fun getDetail(@Path("id") id: String): Response<DetailEventResponse>
+    suspend fun getDetail(
+        @Path("id") id: String
+    ): Response<DetailEventResponse>
 
     @GET("/events")
     suspend fun searchEvents(

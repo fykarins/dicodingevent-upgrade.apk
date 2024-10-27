@@ -1,6 +1,7 @@
 package com.example.dicodingevent.ui.event
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ class UpcomingFragment : Fragment() {
         val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
         val upcomingViewModel: UpcomingViewModel by viewModels { factory }
 
+        Log.d("UpcomingFragment", "Setting up RecyclerView and ViewModel")
         setupRecyclerView(upcomingViewModel)
         observeViewModel(upcomingViewModel)
 

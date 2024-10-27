@@ -22,6 +22,6 @@ data class EventEntity(
     val summary: String,
     val category: String,
     val active: Boolean,
-    var isBookmarked: Boolean,
+    var isBookmarked: Boolean = false,
     var isFavorite: Boolean = false
 )

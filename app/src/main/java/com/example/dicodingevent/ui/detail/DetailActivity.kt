@@ -13,6 +13,10 @@ import com.bumptech.glide.Glide
 import com.example.dicodingevent.R
 import com.example.dicodingevent.data.local.entity.EventEntity
 import com.example.dicodingevent.databinding.ActivityDetailBinding
+import com.example.dicodingevent.ui.main.MainViewModel
+import com.example.dicodingevent.utils.SettingPreferences
+import com.example.dicodingevent.utils.ViewModelFactory
+import com.example.dicodingevent.utils.dataStore
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
@@ -34,7 +38,9 @@ class DetailActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        detailViewModel = ViewModelProvider(this)[DetailViewModel::class.java]
+        val pref = SettingPreferences.getInstance(this.dataStore)
+        val factory = ViewModelFactory.getInstance(this, pref)
+        detailViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
 
         val eventId = intent.getIntExtra("EVENT_ID", 0)
         if (eventId != 0) {

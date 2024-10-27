@@ -6,17 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dicodingevent.R
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.databinding.FragmentFavoriteBinding
+import com.example.dicodingevent.ui.main.MainViewModel
+import com.example.dicodingevent.utils.DataStoreManager
+import com.example.dicodingevent.utils.DataStoreViewModel
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
 import com.example.dicodingevent.utils.dataStore
 
-class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
+class FavoriteFragment : Fragment() {
 
     private var _binding: FragmentFavoriteBinding? = null
     private val binding get() = _binding!!
@@ -39,9 +42,18 @@ class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize DataStore and ViewModel
+        val dataStoreManager = DataStoreManager(requireContext())
+        val dataStoreViewModelFactory = DataStoreViewModel.Factory(dataStoreManager)
+        val dataStoreViewModel = ViewModelProvider(this, dataStoreViewModelFactory)[DataStoreViewModel::class.java]
+
+        // Initialize MainViewModel with preferences
         val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
-        val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
-        viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
+        val factory = ViewModelFactory.getInstance(requireContext(), sharedPref)
+        val mainViewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
+        val viewModel: FavoriteViewModel by viewModels { factory }
+
+        this.viewModel = viewModel
 
         setupRecyclerView()
         observeViewModel()
@@ -51,7 +63,7 @@ class FavoriteFragment : Fragment(R.layout.fragment_favorite) {
 
     private fun setupRecyclerView() {
         adapter = EventAdapter { eventItem ->
-            if (eventItem.isBookmarked) {
+            if (eventItem.isFavorite) {
                 viewModel.deleteFavoriteEvent(eventItem)
             } else {
                 viewModel.addFavoriteEvent(eventItem)

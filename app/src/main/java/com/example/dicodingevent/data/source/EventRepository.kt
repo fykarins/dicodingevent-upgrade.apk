@@ -87,6 +87,14 @@ class EventRepository private constructor(
         return eventDao.getFavoriteEvents()
     }
 
+    suspend fun addEventToFavorites(eventId: Int) {
+        eventDao.addToFavorites(eventId)
+    }
+
+    suspend fun removeEventFromFavorites(eventId: Int) {
+        eventDao.removeFromFavorites(eventId)
+    }
+
     fun updateBookmarkStatus(eventId: Int, isBookmarked: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
             eventDao.updateBookmarkStatus(eventId, isBookmarked)

@@ -3,9 +3,9 @@ package com.example.dicodingevent.ui.main
 import android.content.Context
 import android.os.Bundle
 import android.os.StrictMode
-import android.widget.CompoundButton
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.dicodingevent.R
 import com.example.dicodingevent.databinding.ActivityMainBinding
 import com.example.dicodingevent.di.Injection
+import com.example.dicodingevent.ui.bookmark.BookmarkFragment
 import com.example.dicodingevent.ui.event.FinishedFragment
 import com.example.dicodingevent.ui.event.HomeFragment
 import com.example.dicodingevent.ui.event.UpcomingFragment
@@ -27,7 +28,6 @@ import com.example.dicodingevent.utils.DataStoreViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -59,28 +59,10 @@ class MainActivity : AppCompatActivity() {
         val dataStoreViewModelFactory = DataStoreViewModel.Factory(dataStoreManager)
         dataStoreViewModel = ViewModelProvider(this, dataStoreViewModelFactory)[DataStoreViewModel::class.java]
 
-        // Initialize ViewModel with preferences
         val pref = SettingPreferences.getInstance(this.dataStore)
         val factory = ViewModelFactory.getInstance(this, pref)
         mainViewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
-        // Setup theme switch
-        val switchTheme = findViewById<SwitchMaterial>(R.id.switch_theme)
-        mainViewModel.getThemeSettings().observe(this) { isDarkModeActive: Boolean ->
-            if (isDarkModeActive) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                switchTheme.isChecked = true
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                switchTheme.isChecked = false
-            }
-        }
-
-        switchTheme.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            mainViewModel.saveThemeSetting(isChecked)
-        }
-
-        // Setup Bottom Navigation
         val bottomNavigation: BottomNavigationView = findViewById(R.id.nav_view)
         bottomNavigation.setOnItemSelectedListener { item ->
             val fragment: Fragment? = when (item.itemId) {
@@ -88,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_finished -> FinishedFragment()
                 R.id.navigation_home -> HomeFragment()
                 R.id.navigation_favorite -> FavoriteFragment()
-                R.id.navigation_setting -> SettingFragment()
+                R.id.navigation_bookmark -> BookmarkFragment()
                 else -> null
             }
             if (fragment != null) {
@@ -99,12 +81,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Default fragment load
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
         }
 
-        // Collect reminder setting
         lifecycleScope.launch {
             pref.isReminderEnabled().collect { isReminderEnabled ->
                 if (isReminderEnabled) {
@@ -113,7 +93,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // StrictMode for detecting potential issues
         StrictMode.setThreadPolicy(
             StrictMode.ThreadPolicy.Builder()
                 .detectAll()
@@ -121,10 +100,8 @@ class MainActivity : AppCompatActivity() {
                 .build()
         )
 
-        // Set toolbar
         setSupportActionBar(binding.toolbar)
 
-        // SearchView setup
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
@@ -137,5 +114,20 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                loadFragment(SettingFragment())
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 }
