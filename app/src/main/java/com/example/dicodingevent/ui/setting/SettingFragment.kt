@@ -7,7 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.dicodingevent.databinding.PreferenceBinding
+import com.example.dicodingevent.utils.ReminderWorker
+import java.util.concurrent.TimeUnit
 
 class SettingFragment : Fragment() {
     private var _binding: PreferenceBinding? = null
@@ -45,14 +50,30 @@ class SettingFragment : Fragment() {
 
         return view
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (binding.switchDailyReminder.isChecked) {
+            activateDailyReminder()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     private fun activateDailyReminder() {
+        val workRequest = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS)
+            .build()
+        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
+            "DailyReminder",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
     }
 
     private fun deactivateDailyReminder() {
+        WorkManager.getInstance(requireContext()).cancelUniqueWork("DailyReminder")
     }
 }

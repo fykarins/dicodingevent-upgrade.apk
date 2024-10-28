@@ -44,46 +44,49 @@ android {
 }
 
 dependencies {
+    // Core dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
+
+    // Lifecycle and ViewModel dependencies
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.material)
+
+    // WorkManager and Preference
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.preference)
 
-
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0") {
         exclude(group = "com.android.support")
     }
-
     kapt(libs.glide.compiler)
-    kapt(libs.androidx.room.compiler)
 
+    // Retrofit and networking
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
 
+    // Coroutines
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
+    // Room
     implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 
+    // DataStore Preferences
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.coroutines.core)
-    implementation(libs.coroutines.android)
-
 }

@@ -79,8 +79,8 @@ class EventFragment : Fragment() {
                         is Result.Error -> {
                             binding.progressBar.visibility = View.GONE
                             Toast.makeText(
-                                context,
-                                "Terjadi kesalahan: ${result.error}",
+                                requireContext(),
+                                "Terjadi kesalahan: ${result.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

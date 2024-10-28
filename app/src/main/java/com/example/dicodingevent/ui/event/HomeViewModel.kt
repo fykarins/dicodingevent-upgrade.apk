@@ -20,12 +20,15 @@ class HomeViewModel(private val repository: EventRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun getHeadlineEvent() {
+    init {
+        getHeadlineEvent()
+    }
+
+    private fun getHeadlineEvent() {
         viewModelScope.launch {
             _events.value = Result.Loading
             try {
-                val result = repository.getHeadlineEvent()
-                _events.postValue(result.value)
+                _events.postValue(repository.getHeadlineEvent().value)
             } catch (e: Exception) {
                 _events.value = Result.Error(e.message ?: "Unknown error")
             }

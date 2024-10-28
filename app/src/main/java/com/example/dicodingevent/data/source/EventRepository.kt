@@ -2,6 +2,7 @@ package com.example.dicodingevent.data.source
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.dicodingevent.BuildConfig
 import com.example.dicodingevent.data.local.entity.EventEntity
 import com.example.dicodingevent.data.local.room.EventDao
@@ -18,7 +19,9 @@ class EventRepository private constructor(
     private val result = MediatorLiveData<Result<List<EventEntity>>>()
 
     fun getHeadlineEvent(): LiveData<Result<List<EventEntity>>> {
-        result.value = Result.Loading
+        // Avoid shadowing the class-level 'result' by renaming this
+        val liveResult = MutableLiveData<Result<List<EventEntity>>>()
+        liveResult.value = Result.Loading
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -43,29 +46,24 @@ class EventRepository private constructor(
                             category = event.category,
                             imageUrl = event.imageUrl,
                             active = event.active,
-                            isBookmarked = eventDao.isEventBookmarked(event.name)
+                            isBookmarked = false
                         )
                     }
-                    eventDao.insertEvents(eventEntities)
-                    eventDao.deleteAllNonBookmarked()
+                    withContext(Dispatchers.Main) {
+                        liveResult.value = Result.Success(eventEntities)
+                    }
                 } else {
                     withContext(Dispatchers.Main) {
-                        result.value = Result.Error(response.message())
+                        liveResult.value = Result.Error(response.message())
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    result.value = Result.Error(e.message ?: "An error occurred")
+                    liveResult.value = Result.Error(e.message ?: "An error occurred")
                 }
             }
         }
-
-        val localData = eventDao.getAllEvents()
-        result.addSource(localData) { newData: List<EventEntity> ->
-            result.value = Result.Success(newData)
-        }
-
-        return result
+        return liveResult
     }
 
     fun getBookmarkedEvents(): LiveData<List<EventEntity>> {
@@ -211,6 +209,18 @@ class EventRepository private constructor(
             }
         } catch (e: Exception) {
             null
+        }
+    }
+
+    fun saveEvent(event: EventEntity) {
+        CoroutineScope(Dispatchers.IO).launch {
+            eventDao.insert(event)
+        }
+    }
+
+    fun deleteEvent(event: EventEntity) {
+        CoroutineScope(Dispatchers.IO).launch {
+            eventDao.deleteById(event.id)
         }
     }
 

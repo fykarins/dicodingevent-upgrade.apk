@@ -38,10 +38,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupRecyclerView()
         observeViewModel()
-        homeViewModel.getHeadlineEvent()
     }
 
     private fun setupRecyclerView() {
@@ -54,8 +52,7 @@ class HomeFragment : Fragment() {
             }
         }
         binding.recyclerViewHome.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
             adapter = eventAdapter
         }
     }
@@ -63,47 +60,23 @@ class HomeFragment : Fragment() {
     private fun observeViewModel() {
         homeViewModel.events.observe(viewLifecycleOwner) { result ->
             when (result) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
+                is Result.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val eventData = result.data
-                    val mappedEventData = mapEventEntityToListEventsItem(eventData)
-                    eventAdapter.submitList(mappedEventData)
+                    val eventData = mapEventEntityToListEventsItem(result.data)
+                    eventAdapter.submitList(eventData)
                 }
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
                         requireContext(),
-                        "Terjadi kesalahan: ${result.error}",
+                        "Terjadi kesalahan: ${result.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
             }
         }
-    }
-
-    private fun mapListEventsItemToEventEntity(listEventsItem: ListEventsItem): EventEntity {
-        return EventEntity(
-            id = listEventsItem.id,
-            name = listEventsItem.name,
-            description = listEventsItem.description,
-            imageLogo = listEventsItem.imageLogo,
-            cityName = listEventsItem.cityName,
-            endTime = listEventsItem.endTime,
-            beginTime = listEventsItem.beginTime,
-            category = listEventsItem.category,
-            imageUrl = listEventsItem.imageUrl,
-            link = listEventsItem.link,
-            mediaCover = listEventsItem.mediaCover,
-            ownerName = listEventsItem.ownerName,
-            quota = listEventsItem.quota,
-            registrants = listEventsItem.registrants,
-            summary = listEventsItem.summary,
-            active = listEventsItem.active,
-            isBookmarked = listEventsItem.isBookmarked
-        )
     }
 
     private fun mapEventEntityToListEventsItem(eventEntities: List<EventEntity>): List<ListEventsItem> {
@@ -128,6 +101,28 @@ class HomeFragment : Fragment() {
                 isBookmarked = eventEntity.isBookmarked
             )
         }
+    }
+
+    private fun mapListEventsItemToEventEntity(event: ListEventsItem): EventEntity {
+        return EventEntity(
+            id = event.id,
+            name = event.name,
+            description = event.description,
+            imageLogo = event.imageLogo,
+            cityName = event.cityName,
+            endTime = event.endTime,
+            beginTime = event.beginTime,
+            category = event.category,
+            imageUrl = event.imageUrl,
+            link = event.link,
+            mediaCover = event.mediaCover,
+            ownerName = event.ownerName,
+            quota = event.quota,
+            registrants = event.registrants,
+            summary = event.summary,
+            active = event.active,
+            isBookmarked = event.isBookmarked
+        )
     }
 
     override fun onDestroyView() {

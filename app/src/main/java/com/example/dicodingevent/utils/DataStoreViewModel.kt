@@ -9,10 +9,17 @@ import kotlinx.coroutines.launch
 class DataStoreViewModel(private val dataStoreManager: DataStoreManager) : ViewModel() {
 
     val darkMode = dataStoreManager.darkModeFlow.asLiveData()
+    val dailyReminder = dataStoreManager.dailyReminderFlow.asLiveData()
 
     fun setDarkMode(enabled: Boolean) {
         viewModelScope.launch {
             dataStoreManager.setDarkMode(enabled)
+        }
+    }
+
+    fun setDailyReminder(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.setDailyReminder(enabled)
         }
     }
 
