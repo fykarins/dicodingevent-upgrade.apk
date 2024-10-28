@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.databinding.FragmentUpcomingBinding
 import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
-import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
 
@@ -22,10 +21,6 @@ class UpcomingFragment : Fragment() {
 
     private lateinit var eventAdapter: EventAdapter
     private val bookmarkViewModel: BookmarkViewModel by viewModels {
-        val sharedPref = SettingPreferences.getInstance(requireContext())
-        ViewModelFactory.getInstance(requireContext(), sharedPref)
-    }
-    private val favoriteViewModel: FavoriteViewModel by viewModels {
         val sharedPref = SettingPreferences.getInstance(requireContext())
         ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
@@ -58,9 +53,7 @@ class UpcomingFragment : Fragment() {
                 } else {
                     bookmarkViewModel.saveEvent(event)
                 }
-            },
-            onFavoriteClick = {}
-
+            }
         )
 
         binding.rvUpcomingEvents.layoutManager = LinearLayoutManager(requireContext())

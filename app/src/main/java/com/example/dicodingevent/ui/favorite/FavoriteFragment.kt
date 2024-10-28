@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.databinding.FragmentFavoriteBinding
-import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
@@ -21,7 +19,6 @@ class FavoriteFragment : Fragment() {
     private var _binding: FragmentFavoriteBinding? = null
     private val binding get() = _binding!!
     private lateinit var favoriteViewModel: FavoriteViewModel
-    private lateinit var bookmarkViewModel: BookmarkViewModel
     private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
@@ -33,9 +30,7 @@ class FavoriteFragment : Fragment() {
         // Initialize ViewModel
         val sharedPref = SettingPreferences.getInstance(requireContext())
         val factory = ViewModelFactory.getInstance(requireContext(), sharedPref)
-
         favoriteViewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
-        bookmarkViewModel = ViewModelProvider(this, factory)[BookmarkViewModel::class.java]
 
         setupRecyclerView()
         observeViewModel()
@@ -47,13 +42,6 @@ class FavoriteFragment : Fragment() {
 
     private fun setupRecyclerView() {
         eventAdapter = EventAdapter(
-            onBookmarkClick = { event ->
-                if (event.isBookmarked) {
-                    bookmarkViewModel.deleteEvent(event)
-                } else {
-                    bookmarkViewModel.saveEvent(event)
-                }
-            },
             onFavoriteClick = { event ->
                 if (event.isFavorite) {
                     favoriteViewModel.deleteFavoriteEvent(event)
@@ -86,7 +74,7 @@ class FavoriteFragment : Fragment() {
                         description = eventEntity.description,
                         endTime = eventEntity.endTime,
                         imageUrl = eventEntity.imageUrl,
-                        isBookmarked = eventEntity.isBookmarked,
+                        isFavorite = true,  // Ensure events are marked as favorites
                         link = eventEntity.link,
                         mediaCover = eventEntity.mediaCover,
                         ownerName = eventEntity.ownerName,

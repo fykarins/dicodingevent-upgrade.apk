@@ -15,7 +15,6 @@ import com.example.dicodingevent.data.source.Result
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.local.entity.EventEntity
 import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
-import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 
 class HomeFragment : Fragment() {
@@ -29,7 +28,6 @@ class HomeFragment : Fragment() {
         ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
     private val bookmarkViewModel: BookmarkViewModel by viewModels()
-    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,13 +50,6 @@ class HomeFragment : Fragment() {
                     bookmarkViewModel.deleteEvent(event)
                 } else {
                     bookmarkViewModel.saveEvent(event)
-                }
-            },
-            onFavoriteClick = { event ->
-                if (event.isFavorite) {
-                    favoriteViewModel.deleteFavoriteEvent(event)
-                } else {
-                    favoriteViewModel.addFavoriteEvent(event)
                 }
             }
         )

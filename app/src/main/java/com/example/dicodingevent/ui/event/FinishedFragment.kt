@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.databinding.FragmentFinishedBinding
 import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
-import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
 
@@ -23,7 +22,6 @@ class FinishedFragment : Fragment() {
 
     private lateinit var eventAdapter: EventAdapter
     private lateinit var bookmarkViewModel: BookmarkViewModel
-    private lateinit var favoriteViewModel: FavoriteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +35,6 @@ class FinishedFragment : Fragment() {
 
         val finishedViewModel: FinishedViewModel by viewModels { factory }
         bookmarkViewModel = ViewModelProvider(this, factory)[BookmarkViewModel::class.java]
-        favoriteViewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
 
         setupRecyclerView()
         observeViewModel(finishedViewModel)
@@ -54,13 +51,6 @@ class FinishedFragment : Fragment() {
                     bookmarkViewModel.deleteEvent(event)
                 } else {
                     bookmarkViewModel.saveEvent(event)
-                }
-            },
-            onFavoriteClick = { event ->
-                if (event.isFavorite) {
-                    favoriteViewModel.deleteFavoriteEvent(event)
-                } else {
-                    favoriteViewModel.addFavoriteEvent(event)
                 }
             }
         )

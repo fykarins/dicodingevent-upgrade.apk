@@ -24,13 +24,12 @@ class FavoriteViewModel(private val repository: EventRepository) : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                // Adjust this to get favorite events based on a separate "favorite" flag if you add it
                 repository.getFavoriteEvents().observeForever { events ->
                     _favoriteEvents.value = events
+                    _isLoading.value = false
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to load favorite events: ${e.message}"
-            } finally {
                 _isLoading.value = false
             }
         }

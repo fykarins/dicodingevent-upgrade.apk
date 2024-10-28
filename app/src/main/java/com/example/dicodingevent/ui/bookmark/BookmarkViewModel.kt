@@ -18,9 +18,6 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
-    private val _favoriteEvents = MutableLiveData<List<EventEntity>>()
-    val favoriteEvents: LiveData<List<EventEntity>> get() = _favoriteEvents
-
     val bookmarkedEvents: LiveData<List<ListEventsItem>> = eventRepository.getBookmarkedEvents().map { events ->
         events.map { event ->
             ListEventsItem(
@@ -42,20 +39,6 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                 imageUrl = event.imageUrl,
                 active = event.active
             )
-        }
-    }
-
-    fun fetchFavoriteEvents() {
-        _isLoading.value = true
-        viewModelScope.launch {
-            try {
-                val favoriteEventsList = eventRepository.getFavoriteEvents().value ?: emptyList()
-                _favoriteEvents.postValue(favoriteEventsList)
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to load favorite events: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
         }
     }
 
@@ -84,8 +67,9 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                         active = event.active
                     )
                 )
+                eventRepository.getBookmarkedEvents()
             } catch (e: Exception) {
-                _errorMessage.value = e.message
+                _errorMessage.value = "Failed to save bookmark: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
@@ -117,8 +101,9 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                         active = event.active
                     )
                 )
+                eventRepository.getBookmarkedEvents()
             } catch (e: Exception) {
-                _errorMessage.value = e.message
+                _errorMessage.value = "Failed to delete bookmark: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

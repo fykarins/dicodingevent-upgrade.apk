@@ -2,6 +2,7 @@ package com.example.dicodingevent.utils
 
 import android.content.Intent
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +17,8 @@ import com.example.dicodingevent.databinding.ItemEventBinding
 import com.example.dicodingevent.ui.detail.DetailActivity
 
 class EventAdapter(
-    private val onBookmarkClick: (ListEventsItem) -> Unit,
-    private val onFavoriteClick: (ListEventsItem) -> Unit
+    private val onBookmarkClick: ((ListEventsItem) -> Unit)? = null,
+    private val onFavoriteClick: ((ListEventsItem) -> Unit)? = null
 ) : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
 
     inner class EventViewHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -39,12 +40,24 @@ class EventAdapter(
                 ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmark_white))
             }
 
-            // Sembunyikan ikon favorit di luar DetailActivity
-            binding.ivFavorite.visibility = View.GONE
+            // Show or hide favorite icon based on fragment usage
+            binding.ivFavorite.visibility = if (onFavoriteClick != null) View.VISIBLE else View.GONE
 
             // Handle bookmark icon click
             ivBookmark.setOnClickListener {
-                onBookmarkClick(event)
+                Log.d("BookmarkClick", "Event ${event.id} bookmark clicked!")  // Logging click
+                onBookmarkClick?.invoke(event)
+
+                val updatedEvent = event.copy(isBookmarked = !event.isBookmarked)
+
+                submitList(currentList.toMutableList().apply {
+                    set(adapterPosition, updatedEvent)
+                })
+            }
+
+            // Handle favorite icon click if available
+            binding.ivFavorite.setOnClickListener {
+                onFavoriteClick?.invoke(event)
             }
 
             // Navigate to DetailActivity on item click
