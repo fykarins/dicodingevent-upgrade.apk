@@ -34,8 +34,7 @@ class EventFragment : Fragment() {
     ): View {
         _binding = FragmentEventBinding.inflate(inflater, container, false)
 
-        val dataStore = requireContext().dataStore
-        val settingPreferences = SettingPreferences.getInstance(dataStore)
+        val settingPreferences = SettingPreferences.getInstance(requireContext())
         val factory = ViewModelFactory.getInstance(requireContext(), settingPreferences)
 
         bookmarkViewModel = ViewModelProvider(this, factory)[BookmarkViewModel::class.java]
@@ -73,7 +72,7 @@ class EventFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         tabName = arguments?.getString(ARG_TAB) ?: ""
 
-        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val sharedPref = SettingPreferences.getInstance(requireContext())
         val factory: ViewModelFactory = ViewModelFactory.getInstance(requireContext(), sharedPref)
         val viewModel: EventViewModel by viewModels { factory }
 

@@ -15,7 +15,6 @@ import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
-import com.example.dicodingevent.utils.dataStore
 
 class FavoriteFragment : Fragment() {
 
@@ -32,7 +31,7 @@ class FavoriteFragment : Fragment() {
         _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
 
         // Initialize ViewModel
-        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val sharedPref = SettingPreferences.getInstance(requireContext())
         val factory = ViewModelFactory.getInstance(requireContext(), sharedPref)
 
         favoriteViewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]

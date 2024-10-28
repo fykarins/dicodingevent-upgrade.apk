@@ -7,20 +7,23 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.dicodingevent.R
 import com.example.dicodingevent.data.local.entity.EventEntity
 import com.example.dicodingevent.databinding.ActivityDetailBinding
-import com.example.dicodingevent.ui.main.MainViewModel
+import com.example.dicodingevent.utils.DataStoreViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
-import com.example.dicodingevent.utils.dataStore
+import kotlinx.coroutines.launch
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
     private lateinit var detailViewModel: DetailViewModel
+    private lateinit var dataStoreViewModel: DataStoreViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +41,29 @@ class DetailActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        val pref = SettingPreferences.getInstance(this.dataStore)
+        // Initialize SettingPreferences
+        val pref = SettingPreferences.getInstance(this)
         val factory = ViewModelFactory.getInstance(this, pref)
         detailViewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
+
+        // Set up DataStoreViewModel to observe dark mode setting
+        dataStoreViewModel = ViewModelProvider(this, DataStoreViewModel.Factory(pref))[DataStoreViewModel::class.java]
+        dataStoreViewModel.darkMode.observe(this) { isDarkTheme ->
+            AppCompatDelegate.setDefaultNightMode(
+                if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
+
+        // Observe dark mode setting
+        lifecycleScope.launch {
+            dataStoreViewModel.darkMode.observe(this@DetailActivity) { isDarkTheme ->
+                AppCompatDelegate.setDefaultNightMode(
+                    if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
 
         val eventId = intent.getIntExtra("EVENT_ID", 0)
         if (eventId != 0) {
@@ -110,7 +133,6 @@ class DetailActivity : AppCompatActivity() {
                 val event = it.event
 
                 binding.tvEventName.text = event.name
-
                 binding.tvDescription.text = HtmlCompat.fromHtml(event.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
                 Glide.with(this)

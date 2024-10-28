@@ -14,7 +14,6 @@ import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
 import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
-import com.example.dicodingevent.utils.dataStore
 
 class UpcomingFragment : Fragment() {
 
@@ -23,15 +22,15 @@ class UpcomingFragment : Fragment() {
 
     private lateinit var eventAdapter: EventAdapter
     private val bookmarkViewModel: BookmarkViewModel by viewModels {
-        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val sharedPref = SettingPreferences.getInstance(requireContext())
         ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
     private val favoriteViewModel: FavoriteViewModel by viewModels {
-        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val sharedPref = SettingPreferences.getInstance(requireContext())
         ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
     private val upcomingViewModel: UpcomingViewModel by viewModels {
-        val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
+        val sharedPref = SettingPreferences.getInstance(requireContext())
         ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
 

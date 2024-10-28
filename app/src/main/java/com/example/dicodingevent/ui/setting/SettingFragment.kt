@@ -7,11 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.dicodingevent.databinding.PreferenceBinding
 import com.example.dicodingevent.utils.ReminderWorker
+import com.example.dicodingevent.utils.SettingPreferences
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class SettingFragment : Fragment() {
@@ -25,19 +28,24 @@ class SettingFragment : Fragment() {
         _binding = PreferenceBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val sharedPref = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE)
-
-        binding.switchThemeToggle.isChecked = sharedPref.getBoolean("dark_mode", false)
-        binding.switchDailyReminder.isChecked = sharedPref.getBoolean("daily_reminder", false)
-
-        binding.switchThemeToggle.setOnCheckedChangeListener { _, isChecked ->
-            sharedPref.edit().putBoolean("dark_mode", isChecked).apply()
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        lifecycleScope.launch {
+            SettingPreferences.getInstance(requireContext()).getThemeSetting().collect { isDarkMode ->
+                binding.switchThemeToggle.isChecked = isDarkMode
             }
         }
+
+        binding.switchThemeToggle.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch {
+                SettingPreferences.getInstance(requireContext()).saveThemeSetting(isChecked)
+            }
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
+
+        val sharedPref = requireActivity().getSharedPreferences("settings", Context.MODE_PRIVATE)
+        binding.switchDailyReminder.isChecked = sharedPref.getBoolean("daily_reminder", false)
 
         binding.switchDailyReminder.setOnCheckedChangeListener { _, isChecked ->
             sharedPref.edit().putBoolean("daily_reminder", isChecked).apply()
