@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dicodingevent.databinding.FragmentBookmarkBinding
+import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.utils.EventAdapter
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
@@ -23,6 +24,7 @@ class BookmarkFragment : Fragment() {
     private var _binding: FragmentBookmarkBinding? = null
     private val binding get() = _binding!!
     private lateinit var bookmarkViewModel: BookmarkViewModel
+    private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
@@ -36,6 +38,7 @@ class BookmarkFragment : Fragment() {
         val factory = ViewModelFactory.getInstance(requireContext(), settingPreferences)
 
         bookmarkViewModel = ViewModelProvider(this, factory)[BookmarkViewModel::class.java]
+        favoriteViewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
 
         setupRecyclerView()
         observeViewModel()
@@ -44,13 +47,23 @@ class BookmarkFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        eventAdapter = EventAdapter { event ->
-            if (event.isBookmarked) {
-                bookmarkViewModel.deleteEvent(event)
-            } else {
-                bookmarkViewModel.saveEvent(event)
+        eventAdapter = EventAdapter(
+            onBookmarkClick = { event ->
+                if (event.isBookmarked) {
+                    bookmarkViewModel.deleteEvent(event)
+                } else {
+                    bookmarkViewModel.saveEvent(event)
+                }
+            },
+            onFavoriteClick = { event ->
+                if (event.isFavorite) {
+                    favoriteViewModel.deleteFavoriteEvent(event)
+                } else {
+                    favoriteViewModel.addFavoriteEvent(event)
+                }
             }
-        }
+        )
+
         binding.bookmarkRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.bookmarkRecyclerView.adapter = eventAdapter
     }

@@ -3,6 +3,7 @@ package com.example.dicodingevent.ui.event
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.dicodingevent.data.source.EventRepository
 import com.example.dicodingevent.data.source.Result
@@ -20,20 +21,7 @@ class HomeViewModel(private val repository: EventRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    init {
-        getHeadlineEvent()
-    }
-
-    private fun getHeadlineEvent() {
-        viewModelScope.launch {
-            _events.value = Result.Loading
-            try {
-                _events.postValue(repository.getHeadlineEvent().value)
-            } catch (e: Exception) {
-                _events.value = Result.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
+    fun getHeadlineEvents() = repository.getHeadlineEvents().asLiveData()
 
     fun saveEvent(event: EventEntity) {
         viewModelScope.launch {

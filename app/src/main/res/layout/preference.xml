@@ -16,12 +16,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/dark_mode_theme"
-            android:gravity="start" />
+            android:gravity="start"
+            android:textColor="?attr/colorOnSurface" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_theme_toggle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:thumbTint="?attr/colorSecondary" />
     </TableRow>
 
     <!-- Spacing between rows -->

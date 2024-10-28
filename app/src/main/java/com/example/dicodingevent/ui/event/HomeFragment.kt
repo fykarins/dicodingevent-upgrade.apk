@@ -14,6 +14,8 @@ import com.example.dicodingevent.utils.ViewModelFactory
 import com.example.dicodingevent.data.source.Result
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.local.entity.EventEntity
+import com.example.dicodingevent.ui.bookmark.BookmarkViewModel
+import com.example.dicodingevent.ui.favorite.FavoriteViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.dataStore
 
@@ -27,6 +29,8 @@ class HomeFragment : Fragment() {
         val sharedPref = SettingPreferences.getInstance(requireContext().dataStore)
         ViewModelFactory.getInstance(requireContext(), sharedPref)
     }
+    private val bookmarkViewModel: BookmarkViewModel by viewModels()
+    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,29 +47,39 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        eventAdapter = EventAdapter { event ->
-            val eventEntity = mapListEventsItemToEventEntity(event)
-            if (event.isBookmarked) {
-                homeViewModel.deleteEvent(eventEntity)
-            } else {
-                homeViewModel.saveEvent(eventEntity)
+        eventAdapter = EventAdapter(
+            onBookmarkClick = { event ->
+                if (event.isBookmarked) {
+                    bookmarkViewModel.deleteEvent(event)
+                } else {
+                    bookmarkViewModel.saveEvent(event)
+                }
+            },
+            onFavoriteClick = { event ->
+                if (event.isFavorite) {
+                    favoriteViewModel.deleteFavoriteEvent(event)
+                } else {
+                    favoriteViewModel.addFavoriteEvent(event)
+                }
             }
-        }
-        binding.recyclerViewHome.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = eventAdapter
-        }
+        )
+
+        binding.recyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewHome.adapter = eventAdapter
     }
 
     private fun observeViewModel() {
-        homeViewModel.events.observe(viewLifecycleOwner) { result ->
+        homeViewModel.getHeadlineEvents().observe(viewLifecycleOwner) { result ->
             when (result) {
-                is Result.Loading -> binding.progressBar.visibility = View.VISIBLE
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
                     val eventData = mapEventEntityToListEventsItem(result.data)
                     eventAdapter.submitList(eventData)
                 }
+
                 is Result.Error -> {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(
@@ -74,7 +88,6 @@ class HomeFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
             }
         }
     }
@@ -101,28 +114,6 @@ class HomeFragment : Fragment() {
                 isBookmarked = eventEntity.isBookmarked
             )
         }
-    }
-
-    private fun mapListEventsItemToEventEntity(event: ListEventsItem): EventEntity {
-        return EventEntity(
-            id = event.id,
-            name = event.name,
-            description = event.description,
-            imageLogo = event.imageLogo,
-            cityName = event.cityName,
-            endTime = event.endTime,
-            beginTime = event.beginTime,
-            category = event.category,
-            imageUrl = event.imageUrl,
-            link = event.link,
-            mediaCover = event.mediaCover,
-            ownerName = event.ownerName,
-            quota = event.quota,
-            registrants = event.registrants,
-            summary = event.summary,
-            active = event.active,
-            isBookmarked = event.isBookmarked
-        )
     }
 
     override fun onDestroyView() {

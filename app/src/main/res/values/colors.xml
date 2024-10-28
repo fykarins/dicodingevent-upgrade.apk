@@ -6,4 +6,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#6200EE</color>
+
+    <!-- Material 3 colors -->
+    <color name="colorOnSurface">#000000</color>
+    <color name="colorSecondary">#03DAC6</color>
+    <color name="colorPrimaryContainer">#3700B3</color>
 </resources>

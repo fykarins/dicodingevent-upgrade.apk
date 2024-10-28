@@ -3,6 +3,7 @@ package com.example.dicodingevent.utils
 import android.content.Intent
 import android.text.Html
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -15,7 +16,8 @@ import com.example.dicodingevent.databinding.ItemEventBinding
 import com.example.dicodingevent.ui.detail.DetailActivity
 
 class EventAdapter(
-    private val onBookmarkClick: (ListEventsItem) -> Unit
+    private val onBookmarkClick: (ListEventsItem) -> Unit,
+    private val onFavoriteClick: (ListEventsItem) -> Unit
 ) : ListAdapter<ListEventsItem, EventAdapter.EventViewHolder>(DIFF_CALLBACK) {
 
     inner class EventViewHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -23,25 +25,34 @@ class EventAdapter(
             binding.tvEventName.text = event.name
             binding.tvEventDescription.text = Html.fromHtml(event.description, Html.FROM_HTML_MODE_COMPACT)
 
+            // Load event image
             Glide.with(binding.root.context)
                 .load(event.imageLogo)
                 .into(binding.ivEventImage)
 
+            // Set bookmark icon based on isBookmarked status
             val ivBookmark = binding.ivBookmark
+            ivBookmark.requestLayout()
             if (event.isBookmarked) {
                 ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmarked_white))
             } else {
                 ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmark_white))
             }
 
+            // Sembunyikan ikon favorit di luar DetailActivity
+            binding.ivFavorite.visibility = View.GONE
+
+            // Handle bookmark icon click
             ivBookmark.setOnClickListener {
                 onBookmarkClick(event)
             }
 
+            // Navigate to DetailActivity on item click
             binding.root.setOnClickListener {
                 val context = binding.root.context
-                val intent = Intent(context, DetailActivity::class.java)
-                intent.putExtra("EVENT_ID", event.id)
+                val intent = Intent(context, DetailActivity::class.java).apply {
+                    putExtra("EVENT_ID", event.id)
+                }
                 context.startActivity(intent)
             }
         }
