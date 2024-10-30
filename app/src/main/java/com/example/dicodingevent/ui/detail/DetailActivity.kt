@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.dicodingevent.R
 import com.example.dicodingevent.data.local.entity.EventEntity
@@ -18,7 +17,6 @@ import com.example.dicodingevent.databinding.ActivityDetailBinding
 import com.example.dicodingevent.utils.DataStoreViewModel
 import com.example.dicodingevent.utils.SettingPreferences
 import com.example.dicodingevent.utils.ViewModelFactory
-import kotlinx.coroutines.launch
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
@@ -53,16 +51,6 @@ class DetailActivity : AppCompatActivity() {
                 if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES
                 else AppCompatDelegate.MODE_NIGHT_NO
             )
-        }
-
-        // Observe dark mode setting
-        lifecycleScope.launch {
-            dataStoreViewModel.darkMode.observe(this@DetailActivity) { isDarkTheme ->
-                AppCompatDelegate.setDefaultNightMode(
-                    if (isDarkTheme) AppCompatDelegate.MODE_NIGHT_YES
-                    else AppCompatDelegate.MODE_NIGHT_NO
-                )
-            }
         }
 
         val eventId = intent.getIntExtra("EVENT_ID", 0)

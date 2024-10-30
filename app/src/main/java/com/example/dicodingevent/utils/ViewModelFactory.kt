@@ -44,6 +44,9 @@ class ViewModelFactory private constructor(
             modelClass.isAssignableFrom(BookmarkViewModel::class.java) -> {
                 BookmarkViewModel(eventRepository) as T
             }
+            modelClass.isAssignableFrom(DataStoreViewModel::class.java) -> {
+                DataStoreViewModel(pref) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

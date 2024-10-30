@@ -2,7 +2,6 @@ package com.example.dicodingevent.utils
 
 import android.content.Intent
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,41 +25,26 @@ class EventAdapter(
             binding.tvEventName.text = event.name
             binding.tvEventDescription.text = Html.fromHtml(event.description, Html.FROM_HTML_MODE_COMPACT)
 
-            // Load event image
             Glide.with(binding.root.context)
                 .load(event.imageLogo)
                 .into(binding.ivEventImage)
 
-            // Set bookmark icon based on isBookmarked status
-            val ivBookmark = binding.ivBookmark
-            ivBookmark.requestLayout()
-            if (event.isBookmarked) {
-                ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmarked_white))
-            } else {
-                ivBookmark.setImageDrawable(ContextCompat.getDrawable(ivBookmark.context, R.drawable.ic_bookmark_white))
-            }
+            setBookmarkIcon(event.isBookmarked)
 
-            // Show or hide favorite icon based on fragment usage
             binding.ivFavorite.visibility = if (onFavoriteClick != null) View.VISIBLE else View.GONE
 
-            // Handle bookmark icon click
-            ivBookmark.setOnClickListener {
-                Log.d("BookmarkClick", "Event ${event.id} bookmark clicked!")  // Logging click
-                onBookmarkClick?.invoke(event)
-
+            binding.ivBookmark.setOnClickListener {
                 val updatedEvent = event.copy(isBookmarked = !event.isBookmarked)
-
+                onBookmarkClick?.invoke(updatedEvent)
                 submitList(currentList.toMutableList().apply {
                     set(adapterPosition, updatedEvent)
                 })
             }
 
-            // Handle favorite icon click if available
             binding.ivFavorite.setOnClickListener {
                 onFavoriteClick?.invoke(event)
             }
 
-            // Navigate to DetailActivity on item click
             binding.root.setOnClickListener {
                 val context = binding.root.context
                 val intent = Intent(context, DetailActivity::class.java).apply {
@@ -68,6 +52,11 @@ class EventAdapter(
                 }
                 context.startActivity(intent)
             }
+        }
+
+        private fun setBookmarkIcon(isBookmarked: Boolean) {
+            val icon = if (isBookmarked) R.drawable.ic_bookmarked_white else R.drawable.ic_bookmark_white
+            binding.ivBookmark.setImageDrawable(ContextCompat.getDrawable(binding.ivBookmark.context, icon))
         }
     }
 
@@ -77,8 +66,7 @@ class EventAdapter(
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        val event = getItem(position)
-        holder.bind(event)
+        holder.bind(getItem(position))
     }
 
     fun submitEvents(eventData: List<ListEventsItem>) {

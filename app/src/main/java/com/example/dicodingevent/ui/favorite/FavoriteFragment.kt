@@ -1,6 +1,7 @@
 package com.example.dicodingevent.ui.favorite
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,8 @@ class FavoriteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
+        binding.progressBar.visibility = View.VISIBLE
+
 
         // Initialize ViewModel
         val sharedPref = SettingPreferences.getInstance(requireContext())
@@ -57,7 +60,7 @@ class FavoriteFragment : Fragment() {
 
     private fun observeViewModel() {
         favoriteViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            Log.d("FavoriteFragment", "Loading state: $isLoading")
             binding.recyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
         }
 

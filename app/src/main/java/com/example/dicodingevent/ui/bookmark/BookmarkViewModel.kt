@@ -25,7 +25,7 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                 name = event.name,
                 description = event.description,
                 imageLogo = event.imageLogo,
-                isBookmarked = event.isBookmarked,
+                isBookmarked = true,
                 beginTime = event.beginTime,
                 category = event.category,
                 cityName = event.cityName,
@@ -52,7 +52,7 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                         name = event.name,
                         description = event.description,
                         imageLogo = event.imageLogo,
-                        isBookmarked = event.isBookmarked,
+                        isBookmarked = true,
                         beginTime = event.beginTime,
                         category = event.category,
                         cityName = event.cityName,
@@ -67,7 +67,6 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                         active = event.active
                     )
                 )
-                eventRepository.getBookmarkedEvents()
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to save bookmark: ${e.message}"
             } finally {
@@ -86,7 +85,7 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                         name = event.name,
                         description = event.description,
                         imageLogo = event.imageLogo,
-                        isBookmarked = event.isBookmarked,
+                        isBookmarked = false,
                         beginTime = event.beginTime,
                         category = event.category,
                         cityName = event.cityName,
@@ -101,7 +100,6 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                         active = event.active
                     )
                 )
-                eventRepository.getBookmarkedEvents()
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to delete bookmark: ${e.message}"
             } finally {
