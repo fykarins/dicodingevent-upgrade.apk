@@ -145,7 +145,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_favorite"
         android:contentDescription="@string/add_to_favorites"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/purple_500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp" />
