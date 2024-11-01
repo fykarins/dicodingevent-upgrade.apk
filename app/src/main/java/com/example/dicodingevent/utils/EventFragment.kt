@@ -43,6 +43,29 @@ class EventFragment : Fragment() {
         return binding.root
     }
 
+    private fun mapToEventEntity(eventItem: ListEventsItem): EventEntity {
+        return EventEntity(
+            id = eventItem.id,
+            name = eventItem.name,
+            description = eventItem.description,
+            imageLogo = eventItem.imageLogo,
+            ownerName = eventItem.ownerName,
+            cityName = eventItem.cityName,
+            quota = eventItem.quota,
+            registrants = eventItem.registrants,
+            beginTime = eventItem.beginTime,
+            endTime = eventItem.endTime,
+            link = eventItem.link,
+            mediaCover = eventItem.mediaCover,
+            summary = eventItem.summary,
+            category = eventItem.category,
+            imageUrl = eventItem.imageUrl,
+            active = eventItem.active,
+            isBookmarked = eventItem.isBookmarked,
+            isFavorite = eventItem.isFavorite
+        )
+    }
+
     private fun convertEventEntityToListEventsItem(eventEntities: List<EventEntity>): List<ListEventsItem> {
         return eventEntities.map { eventEntity ->
             ListEventsItem(
@@ -87,11 +110,12 @@ class EventFragment : Fragment() {
                 }
             },
             onFavoriteClick = { event ->
+                val eventEntity = mapToEventEntity(event)
                 if (event.isFavorite) {
-                    favoriteViewModel.deleteFavoriteEvent(event)
+                    favoriteViewModel.deleteFavoriteEvent(eventEntity)
                     Toast.makeText(context, "Event removed from favorites", Toast.LENGTH_SHORT).show()
                 } else {
-                    favoriteViewModel.addFavoriteEvent(event)
+                    favoriteViewModel.addFavoriteEvent(eventEntity)
                     Toast.makeText(context, "Event added to favorites", Toast.LENGTH_SHORT).show()
                 }
             }

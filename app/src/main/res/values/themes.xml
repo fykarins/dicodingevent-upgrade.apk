@@ -1,24 +1,22 @@
+<!-- values/themes.xml -->
+<!--suppress AndroidDomInspection -->
 <resources>
-    <!-- Base application theme -->
     <style name="Theme.DicodingEvent" parent="Theme.Material3.DayNight">
-
-        <!-- Primary brand color -->
+        <!-- Primary and secondary colors -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@android:color/white</item>
-
-        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@android:color/black</item>
 
-        <!-- Status bar color -->
+        <!-- Status and navigation bar colors -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-
-        <!-- Navigation bar color -->
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
 
-        <!-- Customize your theme here -->
+        <!-- Custom text colors for light mode -->
+        <item name="colorPrimaryText">@color/colorPrimaryText</item>
+        <item name="colorSecondaryText">@color/colorSecondaryText</item>
+        <item name="colorEventText">@color/colorEventText</item>
 
         <!-- Disable ActionBar if you are not using it -->
         <item name="windowActionBar">false</item>

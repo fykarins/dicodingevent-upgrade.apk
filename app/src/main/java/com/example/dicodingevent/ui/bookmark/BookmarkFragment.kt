@@ -2,7 +2,6 @@ package com.example.dicodingevent.ui.bookmark
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,6 @@ class BookmarkFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBookmarkBinding.inflate(inflater, container, false)
-        binding.progressBar.visibility = View.VISIBLE
 
         val settingPreferences = SettingPreferences.getInstance(requireContext())
         val factory = ViewModelFactory.getInstance(requireContext(), settingPreferences)
@@ -59,11 +57,6 @@ class BookmarkFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        bookmarkViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            Log.d("BookmarkFragment", "Loading state: $isLoading")
-            binding.bookmarkRecyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
-        }
-
         bookmarkViewModel.bookmarkedEvents.observe(viewLifecycleOwner) { events ->
             if (events.isNotEmpty()) {
                 eventAdapter.submitEvents(events)

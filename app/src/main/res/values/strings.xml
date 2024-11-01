@@ -29,5 +29,8 @@
     <string name="dark_mode_theme">Dark Mode</string>
     <string name="setting">Setting</string>
     <string name="title_bookmark">Bookmark</string>
+    <string name="event_title">Event Title</string>
+    <string name="event_description">Event Description</string>
+    <string name="event_titles">Event Title</string>
 
 </resources>

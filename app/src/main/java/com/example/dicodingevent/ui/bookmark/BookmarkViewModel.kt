@@ -12,9 +12,6 @@ import kotlinx.coroutines.launch
 
 class BookmarkViewModel(private val eventRepository: EventRepository) : ViewModel() {
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> get() = _isLoading
-
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
@@ -43,7 +40,6 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
     }
 
     fun saveEvent(event: ListEventsItem) {
-        _isLoading.value = true
         viewModelScope.launch {
             try {
                 eventRepository.saveEvent(
@@ -69,14 +65,11 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                 )
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to save bookmark: ${e.message}"
-            } finally {
-                _isLoading.value = false
             }
         }
     }
 
     fun deleteEvent(event: ListEventsItem) {
-        _isLoading.value = true
         viewModelScope.launch {
             try {
                 eventRepository.deleteEvent(
@@ -102,8 +95,6 @@ class BookmarkViewModel(private val eventRepository: EventRepository) : ViewMode
                 )
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to delete bookmark: ${e.message}"
-            } finally {
-                _isLoading.value = false
             }
         }
     }
