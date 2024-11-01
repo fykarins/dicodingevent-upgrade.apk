@@ -1,5 +1,4 @@
 <!-- night/themes.xml -->
-<!--suppress AndroidDomInspection -->
 <resources>
     <style name="Theme.DicodingEvent" parent="Theme.Material3.DayNight">
         <!-- Primary and secondary colors -->
