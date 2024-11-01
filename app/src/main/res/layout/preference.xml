@@ -23,13 +23,23 @@
             android:id="@+id/text_event_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+<<<<<<< HEAD
             android:textColor="?attr/colorPrimaryText" />
+=======
+            android:textColor="?attr/colorPrimaryText"
+            android:text="@string/event_titles" />
+>>>>>>> 870f3832ea1834eaf6354f603b9ea282d896ed87
 
         <TextView
             android:id="@+id/text_event_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+<<<<<<< HEAD
             android:textColor="?attr/colorSecondaryText" />
+=======
+            android:textColor="?attr/colorSecondaryText"
+            android:text="@string/event_description" />
+>>>>>>> 870f3832ea1834eaf6354f603b9ea282d896ed87
 
 
         <androidx.appcompat.widget.SwitchCompat

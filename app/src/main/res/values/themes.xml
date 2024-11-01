@@ -1,4 +1,8 @@
 <!-- values/themes.xml -->
+<<<<<<< HEAD
+=======
+<!--suppress AndroidDomInspection -->
+>>>>>>> 870f3832ea1834eaf6354f603b9ea282d896ed87
 <resources>
     <style name="Theme.DicodingEvent" parent="Theme.Material3.DayNight">
         <!-- Primary and secondary colors -->
